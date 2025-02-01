@@ -1,0 +1,34 @@
+name: hirad
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.5.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  video_player: ^2.9.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/models/
+    - assets/images/
+  fonts: 
+    - family: peyda
+      fonts:
+        - asset: assets/fonts/Peyda-Regular.ttf
+        - asset: assets/fonts/Peyda-Medium.ttf
+        - asset: assets/fonts/Peyda-SemiBold.ttf
+        - asset: assets/fonts/Peyda-Bold.ttf
+        - asset: assets/fonts/Peyda-ExtraBold.ttf
+        - asset: assets/fonts/Peyda-Black.ttf
+
