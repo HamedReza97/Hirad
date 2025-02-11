@@ -11,28 +11,28 @@ ThemeData darkTheme = ThemeData(
   hintColor: const Color.fromRGBO(170, 170, 170, 1), // #AAAAAA
   fontFamily: 'peyda',
   textTheme: const TextTheme(
-    displayLarge: TextStyle(fontSize: 57, fontWeight: FontWeight.bold, color: Colors.white),
-    displayMedium: TextStyle(fontSize: 45, fontWeight: FontWeight.bold, color: Colors.white),
-    displaySmall: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
-    headlineLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
-    headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
-    headlineSmall: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
-    titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.w500, color: Colors.white),
-    titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white),
-    titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white),
-    bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Colors.white),
-    bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: Colors.white),
-    bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: Colors.white),
-    labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
-    labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: Colors.white),
-    labelSmall: TextStyle(fontSize: 11, fontWeight: FontWeight.normal, color: Colors.white),
+    displayLarge: TextStyle(fontSize: 57, fontWeight: FontWeight.bold, color: Color.fromRGBO(212, 212, 212, 1)),
+    displayMedium: TextStyle(fontSize: 45, fontWeight: FontWeight.bold, color: Color.fromRGBO(212, 212, 212, 1)),
+    displaySmall: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Color.fromRGBO(212, 212, 212, 1)),
+    headlineLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Color.fromRGBO(212, 212, 212, 1)),
+    headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color.fromRGBO(212, 212, 212, 1)),
+    headlineSmall: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromRGBO(212, 212, 212, 1)),
+    titleLarge: TextStyle(fontSize: 22, fontWeight: FontWeight.w500, color: Color.fromRGBO(212, 212, 212, 1)),
+    titleMedium: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Color.fromRGBO(212, 212, 212, 1)),
+    titleSmall: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Color.fromRGBO(212, 212, 212, 1)),
+    bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.normal, color: Color.fromRGBO(212, 212, 212, 1)),
+    bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: Color.fromRGBO(212, 212, 212, 1)),
+    bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: Color.fromRGBO(212, 212, 212, 1)),
+    labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color.fromRGBO(212, 212, 212, 1)),
+    labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: Color.fromRGBO(212, 212, 212, 1)),
+    labelSmall: TextStyle(fontSize: 11, fontWeight: FontWeight.normal, color: Color.fromRGBO(212, 212, 212, 1)),
   ),
   colorScheme: const ColorScheme.dark(
     primary: Color.fromRGBO(131, 35, 57, 1), // #832339
     secondary: Color.fromRGBO(81, 25, 34, 1), // #511922
     surface: Color.fromRGBO(18, 18, 18, 1), // #121212
-    onPrimary: Color.fromRGBO(255, 255, 255, 1), // #FFFFFF
-    onSecondary: Color.fromRGBO(255, 255, 255, 1), // #FFFFFF
+    onPrimary: Color.fromRGBO(212, 212, 212, 1), // #FFFFFF
+    onSecondary: Color.fromRGBO(212, 212, 212, 1), // #FFFFFF
     onSurface: Color.fromRGBO(255, 255, 255, 1), // #FFFFFF
     onError: Color.fromRGBO(0, 0, 0, 1), // #000000
     error: Color.fromRGBO(207, 102, 121, 1), // #CF6679
@@ -45,7 +45,7 @@ ThemeData darkTheme = ThemeData(
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: const Color.fromRGBO(131, 35, 57, 1), // #832339
-      foregroundColor: Colors.white,
+      foregroundColor: const Color.fromRGBO(212, 212, 212, 1),
       textStyle: const TextStyle(fontFamily: 'peyda'),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
@@ -55,7 +55,7 @@ ThemeData darkTheme = ThemeData(
     fillColor: Color.fromRGBO(81, 25, 34, 1), // #511922
     border: OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(8)),
-      borderSide: BorderSide(color: Colors.white),
+      borderSide: BorderSide(color: Color.fromRGBO(212, 212, 212, 1)),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -63,21 +63,21 @@ ThemeData darkTheme = ThemeData(
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(8)),
-      borderSide: BorderSide(color: Colors.white),
+      borderSide: BorderSide(color: Color.fromRGBO(212, 212, 212, 1)),
     ),
-    labelStyle: TextStyle(color: Colors.white),
+    labelStyle: TextStyle(color: Color.fromRGBO(212, 212, 212, 1)),
     hintStyle: TextStyle(color: Color.fromRGBO(170, 170, 170, 1)), // #AAAAAA
   ),
   appBarTheme: const AppBarTheme(
     backgroundColor: Color.fromRGBO(18, 18, 18, 1), // #121212
-    foregroundColor: Colors.white,
+    foregroundColor: Color.fromRGBO(212, 212, 212, 1),
     elevation: 0,
     centerTitle: true,
     titleTextStyle: TextStyle(
       fontFamily: 'Peyda',
       fontSize: 20,
       fontWeight: FontWeight.bold,
-      color: Colors.white,
+      color: Color.fromRGBO(212, 212, 212, 1),
     ),
   ),
 );

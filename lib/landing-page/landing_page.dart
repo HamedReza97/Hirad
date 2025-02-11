@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hirad/components/header.dart';
 import 'package:hirad/components/hero_image.dart';
 
 class LandingPage extends StatefulWidget {
@@ -13,16 +14,21 @@ class LandingPageState extends State<LandingPage> {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
+        actions: const [Spacer(),Header(), Spacer()],
+        toolbarHeight: screenHeight/10,
+        ),
+      extendBodyBehindAppBar: true,
         body: SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(
-            height: screenHeight ,
-            width: double.infinity,
-            child: HeroImage()
-          ),
+          const HeroImage(),
+          Stack(
+            children: [
           screenWidth / screenHeight < 1.2
               ? FittedBox(
                   child: Padding(
@@ -47,7 +53,10 @@ class LandingPageState extends State<LandingPage> {
                               padding: const EdgeInsets.all(10),
                               child: _buildService(context, screenWidth, screenHeight)),
                         ),
-                      )))
+                      ))),
+                     
+            ]
+          )
           
         ],
       )

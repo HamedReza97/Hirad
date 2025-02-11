@@ -14,6 +14,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       darkTheme: darkTheme,
       themeMode: ThemeMode.dark,
+      debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
         '/': (context) => const LandingPage(),

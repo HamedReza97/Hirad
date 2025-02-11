@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  particles_flutter: ^1.0.1
   video_player: ^2.9.2
 
 dev_dependencies:
@@ -22,6 +23,7 @@ flutter:
   assets:
     - assets/models/
     - assets/images/
+  
   fonts: 
     - family: peyda
       fonts:
@@ -31,4 +33,6 @@ flutter:
         - asset: assets/fonts/Peyda-Bold.ttf
         - asset: assets/fonts/Peyda-ExtraBold.ttf
         - asset: assets/fonts/Peyda-Black.ttf
-
+    - family: EneftyIcons
+      fonts:
+        - asset: assets/fonts/EneftyIcons.ttf
