@@ -12,11 +12,12 @@ class GlowingSpinningContainer extends StatefulWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
   final Size? size;
+  final bool isAnimated;
 
   const GlowingSpinningContainer({
     super.key,
     this.strokeWidth = 2,
-    this.duration = const Duration(seconds: 3),
+    this.duration = const Duration(seconds: 2),
     this.gradientColors = const [
       Color.fromRGBO(60, 60, 60, 0.7),
       Colors.transparent
@@ -27,6 +28,7 @@ class GlowingSpinningContainer extends StatefulWidget {
     this.padding = const EdgeInsets.all(4),
     this.size,
     required this.child,
+    this.isAnimated = false,
   });
 
   @override
@@ -37,6 +39,8 @@ class GlowingSpinningContainer extends StatefulWidget {
 class GlowingSpinningContainerState extends State<GlowingSpinningContainer>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  // ignore: unused_field
+  bool _isHovered = false;
 
   @override
   void initState() {
@@ -44,7 +48,10 @@ class GlowingSpinningContainerState extends State<GlowingSpinningContainer>
     _controller = AnimationController(
       vsync: this,
       duration: widget.duration,
-    )..repeat();
+    );
+    if (widget.isAnimated) {
+      _controller.repeat();
+    }
   }
 
   @override
@@ -55,76 +62,94 @@ class GlowingSpinningContainerState extends State<GlowingSpinningContainer>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final double width = widget.size?.width ??
-            (constraints.maxWidth.isFinite
-                ? constraints.maxWidth
-                : MediaQuery.of(context).size.width);
-        final double height = widget.size?.height ??
-            (constraints.maxHeight.isFinite
-                ? constraints.maxHeight
-                : MediaQuery.of(context).size.height);
-
-        return Stack(
-          alignment: Alignment.center,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(widget.radius),
-              child: SizedBox(
-                width: width,
-                height: height,
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    color: Colors.transparent,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: height,
-              width: width,
-              child: AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) {
-                  return CustomPaint(
-                    painter: RotatingGradientPainter(
-                      strokeWidth: widget.strokeWidth,
-                      gradientColors: widget.gradientColors,
-                      radius: widget.radius,
-                      rotation: _controller.value * 2 * pi,
-                    ),
-                    child: child,
-                  );
-                },
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(widget.radius),
-                  child: InnerGlow(
-                    padding: widget.padding,
-                    glowRadius: widget.radius,
-                    thickness: height / 4,
-                    glowBlur: height / 4,
-                    strokeLinearGradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [widget.shadowColor, Colors.transparent],
-                    ),
-                    baseDecoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(widget.radius),
-                      color: widget.backgroundColor,
-                    ),
-                    child: widget.child,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
+    return MouseRegion(
+      onEnter: (_) {
+        setState(() {
+          _isHovered = true;
+          _controller.repeat();
+        });
       },
+      onExit: (_) {
+        setState(() {
+          _isHovered = false;
+          if (!widget.isAnimated) {
+            _controller.stop();
+            _controller.reset();
+          }
+        });
+      },
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final double width = widget.size?.width ??
+              (constraints.maxWidth.isFinite
+                  ? constraints.maxWidth
+                  : MediaQuery.of(context).size.width);
+          final double height = widget.size?.height ??
+              (constraints.maxHeight.isFinite
+                  ? constraints.maxHeight
+                  : MediaQuery.of(context).size.height);
+
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(widget.radius),
+                child: SizedBox(
+                  width: width,
+                  height: height,
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    child: Container(
+                      color: Colors.transparent,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: height,
+                width: width,
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return CustomPaint(
+                      painter: RotatingGradientPainter(
+                        strokeWidth: widget.strokeWidth,
+                        gradientColors: widget.gradientColors,
+                        radius: widget.radius,
+                        rotation: _controller.value * 2 * pi,
+                      ),
+                      child: child,
+                    );
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(widget.radius),
+                    child: InnerGlow(
+                      padding: widget.padding,
+                      glowRadius: widget.radius,
+                      thickness: height / 4,
+                      glowBlur: height / 4,
+                      strokeLinearGradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [widget.shadowColor, Colors.transparent],
+                      ),
+                      baseDecoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(widget.radius),
+                        color: widget.backgroundColor,
+                      ),
+                      child: widget.child,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
+
 
 class RotatingGradientPainter extends CustomPainter {
   final double strokeWidth;
@@ -144,8 +169,8 @@ class RotatingGradientPainter extends CustomPainter {
     final rect = Offset.zero & size;
     final shader = LinearGradient(
       colors: gradientColors,
-      begin: Alignment.centerLeft,
-      end: Alignment.centerRight,
+      begin: Alignment.topLeft,
+      end: Alignment.bottomLeft,
       transform: GradientRotation(rotation),
     ).createShader(rect);
 
