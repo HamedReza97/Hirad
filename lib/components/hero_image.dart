@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:hirad/components/animated_container.dart';
-import 'package:hirad/components/animated_line.dart';
-import 'package:hirad/components/interactive_background/particle_system.dart';
+import 'package:hirad/utils/animated_container.dart';
+import 'package:hirad/utils/animated_line.dart';
+import 'package:hirad/utils/interactive_background/particle_system.dart';
 import 'package:hirad/utils/enefty_icons.dart';
 
 class HeroImage extends StatefulWidget {

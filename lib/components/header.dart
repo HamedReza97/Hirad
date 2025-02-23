@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hirad/components/animated_container.dart';
+import 'package:hirad/utils/animated_container.dart';
 
 class Header extends StatefulWidget {
   const Header({super.key});
