@@ -113,10 +113,10 @@ class HeroImageState extends State<HeroImage>
               ),
             ),
           ),
-          ImageFiltered(
-            imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-            child: const ParticleSystemWidget(),
-          ),
+          // ImageFiltered(
+          //   imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+          //   child: const ParticleSystemWidget(),
+          // ),
           AnimatedBuilder(
             animation: _animation,
             builder: (context, child) {

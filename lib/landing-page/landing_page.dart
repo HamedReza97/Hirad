@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:hirad/components/animated_container.dart';
 import 'package:hirad/components/header.dart';
 import 'package:hirad/components/hero_image.dart';
+import 'package:hirad/components/shiny_widget_effect.dart';
 import 'package:hirad/utils/enefty_icons.dart';
 
 class LandingPage extends StatefulWidget {
@@ -17,37 +19,7 @@ class LandingPageState extends State<LandingPage> {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-        appBar: AppBar(
-          surfaceTintColor: Colors.transparent,
-          backgroundColor: Colors.transparent,
-          actions: screenWidth / screenHeight > 1.2
-              ? [
-                  Expanded(
-                      child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30),
-                          child: Row(children: [
-                            loginState(context),
-                            const Spacer(),
-                            const Header(),
-                            const Spacer()
-                          ])))
-                ]
-              : [
-                  Expanded(
-                      child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30),
-                          child: Row(children: [
-                            loginState(context),
-                            const Spacer(
-                              flex: 1,
-                            ),
-                            IconButton(
-                                onPressed: () {},
-                                icon: const Icon(EneftyIcons.menu_outline)),
-                          ]))),
-                ],
-          toolbarHeight: screenHeight / 10,
-        ),
+        appBar: buildAppbar(context, screenHeight, screenWidth),
         extendBodyBehindAppBar: true,
         body: SingleChildScrollView(
             child: Column(
@@ -56,42 +28,114 @@ class LandingPageState extends State<LandingPage> {
           children: [
             const HeroImage(),
             Stack(children: [
-              screenWidth / screenHeight < 1.2
-                  ? FittedBox(
-                      child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 30),
-                          child: Column(
-                              children: List.generate(
-                            4,
-                            (index) => Padding(
-                              padding: const EdgeInsets.all(10),
-                              child: _buildService(
-                                  context, screenWidth, screenHeight),
-                            ),
-                          ))))
-                  : FittedBox(
-                      child: Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: screenWidth / 8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: List.generate(
-                              4,
-                              (index) => Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: _buildService(
-                                      context, screenWidth, screenHeight)),
-                            ),
-                          ))),
+              screenWidth / screenHeight > 1.4
+                  ? buildLargeScreen(context, screenHeight, screenWidth)
+                  : buildSmallScreen(context, screenHeight, screenWidth)
             ])
           ],
         )));
   }
 
+  AppBar buildAppbar(
+      BuildContext context, double screenHeight, double screenWidth) {
+    return AppBar(
+      surfaceTintColor: Colors.transparent,
+      backgroundColor: Colors.transparent,
+      actions: screenWidth / screenHeight > 1.4
+          ? [
+              Expanded(
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: Row(children: [
+                        loginState(context),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        IconButton(
+                            onPressed: () {},
+                            style: IconButton.styleFrom(
+                              backgroundColor: const Color.fromRGBO(39, 39, 39, 1),
+                              padding: const EdgeInsets.all(10)
+                            ),
+                            icon: Icon(
+                              EneftyIcons.search_normal_2_outline,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            )),
+                        const Spacer(),
+                        const Header(),
+                        const Spacer(),
+                        SizedBox(
+                            height: 68,
+                            width: 68,
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: ShinyWidget(
+                                child: SvgPicture.asset(
+                                'assets/images/Hirad-logo-fav.svg',
+                                height: 68,
+                                width: 68,
+                                colorFilter: ColorFilter.mode(
+                                  Theme.of(context).colorScheme.onPrimary,
+                                  BlendMode.srcIn,
+                                ),
+                                )
+                              ),
+                            )),
+                      ])))
+            ]
+          : [
+              Expanded(
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 30),
+                      child: Row(children: [
+                        loginState(context),
+                        const Spacer(
+                          flex: 1,
+                        ),
+                        IconButton(
+                            onPressed: () {},
+                            icon: const Icon(EneftyIcons.menu_outline)),
+                      ]))),
+            ],
+      toolbarHeight: screenHeight / 10,
+    );
+  }
+
+  Widget buildSmallScreen(
+      BuildContext context, double screenHeight, double screenWidth) {
+    return FittedBox(
+        child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: Column(
+                children: List.generate(
+              4,
+              (index) => Padding(
+                padding: const EdgeInsets.all(10),
+                child: _buildService(context, screenWidth, screenHeight),
+              ),
+            ))));
+  }
+
+  Widget buildLargeScreen(
+      BuildContext context, double screenHeight, double screenWidth) {
+    return FittedBox(
+        child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth / 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: List.generate(
+                4,
+                (index) => Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: _buildService(context, screenWidth, screenHeight)),
+              ),
+            )));
+  }
+
   Widget _buildService(
       BuildContext context, double screenWidth, double screenHeight) {
     return AnimatedContainer(
-      width: screenWidth / screenHeight > 1.2
+      width: screenWidth / screenHeight > 1.4
           ? (screenWidth - (screenWidth / 4) - 80) / 4
           : screenWidth,
       duration: const Duration(milliseconds: 100),
@@ -139,6 +183,7 @@ class LandingPageState extends State<LandingPage> {
           gradientColors: [Theme.of(context).primaryColor, Colors.transparent],
           shadowColor: const Color.fromRGBO(131, 35, 57, 0.7),
           size: const Size(140, 42),
+          strokeWidth: 1,
           radius: 18,
           child: TextButton(
               onPressed: () {},
