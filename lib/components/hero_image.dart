@@ -149,7 +149,7 @@ class HeroImageState extends State<HeroImage>
       child: Stack(
         fit: StackFit.expand,
         children: [
-          GlowingSpinningContainer(
+          AnimatedBorderContainer(
             shadowColor: const Color.fromRGBO(255, 255, 255, 0.08),
             backgroundColor: const Color.fromRGBO(255, 255, 255, 0.02),
             size: const Size(170, 68),
@@ -217,11 +217,12 @@ class HeroImageState extends State<HeroImage>
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              GlowingSpinningContainer(
+              AnimatedBorderContainer(
                 backgroundColor: const Color.fromRGBO(255, 255, 255, 0.10),
                 shadowColor: const Color.fromRGBO(255, 255, 255, 0.10),
-                size: const Size(160, 38),
-                radius: 14,
+                size: const Size(160, 42),
+                radius: 18,
+                strokeWidth: 1,
                 child: TextButton(
                   onPressed: () {},
                   style: TextButton.styleFrom(
@@ -232,16 +233,21 @@ class HeroImageState extends State<HeroImage>
                 ),
               ),
               const SizedBox(width: 20),
-              GlowingSpinningContainer(
+              AnimatedBorderContainer(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 gradientColors: [
                   Theme.of(context).primaryColor,
                   Colors.transparent
                 ],
                 shadowColor: const Color.fromRGBO(131, 35, 57, 0.7),
-                size: const Size(160, 38),
-                radius: 14,
-                child: TextButton(
+                size: const Size(160, 42),
+                radius: 18,
+                strokeWidth: 1,
+                child: Container(
+                  color: Theme.of(context).colorScheme.secondary,
+                  height: double.infinity,
+                  width: double.infinity,
+                  child: TextButton(
                   onPressed: () {},
                   style: TextButton.styleFrom(
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -260,6 +266,7 @@ class HeroImageState extends State<HeroImage>
                   ),
                 ),
               ),
+              )
             ],
           ),
         ],

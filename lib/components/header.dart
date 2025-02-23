@@ -96,7 +96,7 @@ void _updateIndicator() {
   }
 
   Widget buildMenu(BuildContext context) {
-    return GlowingSpinningContainer(
+    return AnimatedBorderContainer(
       size: Size(
           MediaQuery.of(context).size.width < 1200
               ? MediaQuery.of(context).size.width / 3 * 2

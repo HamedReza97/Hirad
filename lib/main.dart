@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:hirad/landing-page/landing_page.dart';
 import 'package:hirad/utils/dark_theme.dart';
 
 void main() {
+  debugProfileLayoutsEnabled = true;
   runApp(const MainApp());
 }
 

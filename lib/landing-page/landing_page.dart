@@ -134,12 +134,12 @@ class LandingPageState extends State<LandingPage> {
         children: [CircleAvatar()],
       );
     } else {
-      return GlowingSpinningContainer(
+      return AnimatedBorderContainer(
           backgroundColor: Theme.of(context).colorScheme.secondary,
           gradientColors: [Theme.of(context).primaryColor, Colors.transparent],
           shadowColor: const Color.fromRGBO(131, 35, 57, 0.7),
-          size: const Size(140, 38),
-          radius: 14,
+          size: const Size(140, 42),
+          radius: 18,
           child: TextButton(
               onPressed: () {},
               style: TextButton.styleFrom(
