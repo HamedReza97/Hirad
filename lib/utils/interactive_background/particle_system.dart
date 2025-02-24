@@ -4,7 +4,11 @@ import 'particle.dart';
 import 'particle_painter.dart';
 
 class ParticleSystemWidget extends StatefulWidget {
-  const ParticleSystemWidget({super.key});
+  final int particleCount;
+  const ParticleSystemWidget({
+    super.key,
+    this.particleCount = 50
+    });
 
   @override
   ParticleSystemWidgetState createState() => ParticleSystemWidgetState();
@@ -15,8 +19,6 @@ class ParticleSystemWidgetState extends State<ParticleSystemWidget>
   late List<Particle> particles;
   late AnimationController _controller;
   late Size screenSize;
-
-  final int particleCount = 50;
   Offset mousePosition = Offset.zero;
   final double interactionRadius = 200.0;
   final double sqInteractionRadius = 200.0 * 200.0; 
@@ -43,7 +45,7 @@ class ParticleSystemWidgetState extends State<ParticleSystemWidget>
   }
 
   void generateParticles() {
-    particles = List.generate(particleCount, (_) {
+    particles = List.generate(widget.particleCount, (_) {
       return Particle(
         Offset(
           random.nextDouble() * screenSize.width,

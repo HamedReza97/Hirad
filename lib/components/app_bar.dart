@@ -10,6 +10,16 @@ AppBar buildAppbar(
     return AppBar(
       surfaceTintColor: Colors.transparent,
       backgroundColor: Colors.transparent,
+      flexibleSpace: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Theme.of(context).colorScheme.surface, Colors.transparent],
+            stops: const [0.0, 0.6]
+          )
+        ),
+      ),
       actions: screenWidth / screenHeight > 1.4
           ? [
               Expanded(
@@ -82,6 +92,7 @@ AppBar buildAppbar(
           shadowColor: const Color.fromRGBO(131, 35, 57, 0.7),
           size: const Size(140, 42),
           strokeWidth: 1,
+          padding: const EdgeInsets.all(2),
           radius: 18,
           child: TextButton(
               onPressed: () {},

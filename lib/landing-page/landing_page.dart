@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:hirad/components/app_bar.dart';
-import 'package:hirad/components/hero_image.dart';
+import 'package:hirad/landing-page/hero_image.dart';
+import 'package:hirad/landing-page/service_section.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -9,93 +11,69 @@ class LandingPage extends StatefulWidget {
 }
 
 class LandingPageState extends State<LandingPage> {
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _heroImageKey = GlobalKey();
+  final GlobalKey _serviceSectionKey = GlobalKey();
+
+  bool heroImageVisible = true;
+  bool serviceSectionVisible = false;
   bool logedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_checkVisibility);
+  }
+
+  void _checkVisibility() {
+    _checkWidgetVisibility(_serviceSectionKey, (isVisible) {
+      if (isVisible && !serviceSectionVisible) {
+        setState(() {
+          serviceSectionVisible = true;
+        });
+      }
+    });
+  }
+
+  void _checkWidgetVisibility(GlobalKey key, Function(bool) onVisibilityChange) {
+    final RenderObject? renderObject = key.currentContext?.findRenderObject();
+    if (renderObject != null && renderObject is RenderBox) {
+      final viewport = RenderAbstractViewport.of(renderObject);
+      final scrollOffset = _scrollController.offset;
+      final offsetToViewport = viewport.getOffsetToReveal(renderObject, 0.5).offset;
+
+      final isVisible = offsetToViewport <= scrollOffset + 300;
+      onVisibilityChange(isVisible);
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-        appBar: buildAppbar(context, screenHeight, screenWidth, logedIn),
-        extendBodyBehindAppBar: true,
-        body: SingleChildScrollView(
-            child: Column(
+      appBar: buildAppbar(context, screenHeight, screenWidth, logedIn),
+      extendBodyBehindAppBar: true,
+      body: SingleChildScrollView(
+        controller: _scrollController,
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const HeroImage(),
-            Stack(children: [
-              screenWidth / screenHeight > 1.4
-                  ? buildLargeScreen(context, screenHeight, screenWidth)
-                  : buildSmallScreen(context, screenHeight, screenWidth)
-            ])
-          ],
-        )));
-  }
-
-  Widget buildSmallScreen(
-      BuildContext context, double screenHeight, double screenWidth) {
-    return FittedBox(
-        child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: Column(
-                children: List.generate(
-              4,
-              (index) => Padding(
-                padding: const EdgeInsets.all(10),
-                child: _buildService(context, screenWidth, screenHeight),
-              ),
-            ))));
-  }
-
-  Widget buildLargeScreen(
-      BuildContext context, double screenHeight, double screenWidth) {
-    return FittedBox(
-        child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: screenWidth / 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(
-                4,
-                (index) => Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: _buildService(context, screenWidth, screenHeight)),
-              ),
-            )));
-  }
-
-  Widget _buildService(
-      BuildContext context, double screenWidth, double screenHeight) {
-    return AnimatedContainer(
-      width: screenWidth / screenHeight > 1.4
-          ? (screenWidth - (screenWidth / 4) - 80) / 4
-          : screenWidth,
-      duration: const Duration(milliseconds: 100),
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: SelectableRegion(
-        focusNode: FocusNode(),
-        selectionControls: MaterialTextSelectionControls(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 10),
-            Text(
-              "متن عنوان",
-              style: Theme.of(context).textTheme.titleLarge,
+            Container(
+              key: _heroImageKey,
+              child: const HeroImage(),
             ),
-            Divider(
-              height: 20,
-              thickness: 1,
-              color: Theme.of(context).dividerColor,
-            ),
-            Text(
-              "در بسیاری از مواقع فورس ماژور مهمترین فاکتور برای مدیران تدارکات سرعت در تامین کالای مورد استفاده است، اگر کالای مورد نیاز تولید خارج از کشور باشد طبیعتا زمان زیادی برای انجام امور بازرگانی صرف خواهد شد، در این زمان است که بهترین گزینه خرید از انبارداران کالای صنعتی اروپائی یا همان استوکیست ها است، تجـهیـز فرآیـنـد هـیـراد با دارا بودن روابط مستقیم با انبارداران بزرگ کالای صنعتی در ایـران امکان تـامین کـالا از ایشان را در سـریع ترین زمـان ممکن دارد ما با اخـذ ارتباط مستقیم از آنها تسهیل کننده منـابع ضروری در کـشور هستیم.",
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.justify,
-              textDirection: TextDirection.rtl,
+            Container(
+              key: _serviceSectionKey,
+              child: serviceSectionVisible ? const ServiceSection() : const SizedBox(height: 600),
             ),
           ],
         ),

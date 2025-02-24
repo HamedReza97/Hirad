@@ -5,7 +5,7 @@ import 'package:hirad/utils/animated_line.dart';
 import 'package:hirad/utils/interactive_background/particle_system.dart';
 import 'package:hirad/utils/enefty_icons.dart';
 
-class HeroImage extends StatefulWidget {
+class HeroImage extends StatefulWidget{
   const HeroImage({super.key});
 
   @override
@@ -49,7 +49,14 @@ class HeroImageState extends State<HeroImage>
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
-
+    if(screenWidth/screenHeight > 1.4){
+      topFactors = [0.45, 0.2, 0.3, 0.45, 0.2];
+      leftFactors = [0.10, 0.24, 0.45, 0.75, 0.65];
+    }
+    else{
+      topFactors = [0.5, 0.2, 0.34, 0.42, 0.25];
+      leftFactors = [0.05, 0.05, 0.15, 0.5, 0.53];
+    }
     List<Offset> itemCenters = [];
     List<Offset> connectorStarts = [];
     List<Widget> positionedItems = [];
@@ -93,7 +100,7 @@ class HeroImageState extends State<HeroImage>
           }));
     }
     return SizedBox(
-      height: screenHeight,
+      height: screenWidth/screenHeight > 1.4 ? screenHeight *0.85 : screenHeight,
       width: double.infinity,
       child: Stack(
         children: [
@@ -113,10 +120,10 @@ class HeroImageState extends State<HeroImage>
               ),
             ),
           ),
-          // ImageFiltered(
-          //   imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-          //   child: const ParticleSystemWidget(),
-          // ),
+          ImageFiltered(
+            imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+            child: const ParticleSystemWidget(),
+          ),
           AnimatedBuilder(
             animation: _animation,
             builder: (context, child) {
@@ -217,12 +224,8 @@ class HeroImageState extends State<HeroImage>
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AnimatedBorderContainer(
-                backgroundColor: const Color.fromRGBO(255, 255, 255, 0.10),
-                shadowColor: const Color.fromRGBO(255, 255, 255, 0.10),
+              AnimatedBorderContainer.secondaryButton(
                 size: const Size(160, 42),
-                radius: 18,
-                strokeWidth: 1,
                 child: TextButton(
                   onPressed: () {},
                   style: TextButton.styleFrom(
@@ -233,21 +236,9 @@ class HeroImageState extends State<HeroImage>
                 ),
               ),
               const SizedBox(width: 20),
-              AnimatedBorderContainer(
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                gradientColors: [
-                  Theme.of(context).primaryColor,
-                  Colors.transparent
-                ],
-                shadowColor: const Color.fromRGBO(131, 35, 57, 0.7),
+              AnimatedBorderContainer.primaryButton(
                 size: const Size(160, 42),
-                radius: 18,
-                strokeWidth: 1,
-                child: Container(
-                  color: Theme.of(context).colorScheme.secondary,
-                  height: double.infinity,
-                  width: double.infinity,
-                  child: TextButton(
+                child: TextButton(
                   onPressed: () {},
                   style: TextButton.styleFrom(
                     foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -266,7 +257,7 @@ class HeroImageState extends State<HeroImage>
                   ),
                 ),
               ),
-              )
+              
             ],
           ),
         ],

@@ -16,15 +16,48 @@ class AnimatedBorderContainer extends StatefulWidget {
 
   const AnimatedBorderContainer({
     super.key,
-    this.strokeWidth = 2,
+    this.strokeWidth = 1,
     this.duration = const Duration(seconds: 2),
     this.gradientColors = const [
       Color.fromRGBO(60, 60, 60, 0.7),
       Colors.transparent
     ],
     this.radius = 24,
-    this.shadowColor = Colors.transparent,
-    this.backgroundColor = Colors.transparent,
+    this.shadowColor = const Color.fromRGBO(255, 255, 255, 0.08),
+    this.backgroundColor = const Color.fromRGBO(255, 255, 255, 0.04),
+    this.padding = const EdgeInsets.all(8),
+    this.size,
+    required this.child,
+    this.isAnimated = false,
+  });
+
+    const AnimatedBorderContainer.primaryButton({
+    super.key,
+    this.strokeWidth = 1,
+    this.duration = const Duration(seconds: 2),
+    this.gradientColors = const [
+      Color.fromRGBO(131, 35, 57, 1),
+      Colors.transparent
+    ],
+    this.radius = 24,
+    this.shadowColor = const Color.fromRGBO(131, 35, 57, 0.7),
+    this.backgroundColor = const Color.fromRGBO(81, 25, 34, 1),
+    this.padding = const EdgeInsets.all(4),
+    this.size,
+    required this.child,
+    this.isAnimated = false,
+  });
+    const AnimatedBorderContainer.secondaryButton({
+    super.key,
+    this.strokeWidth = 1,
+    this.duration = const Duration(seconds: 2),
+    this.gradientColors = const [
+      Color.fromRGBO(255, 255, 255, 0.14),
+      Colors.transparent
+    ],
+    this.radius = 24,
+    this.backgroundColor = const Color.fromRGBO(255, 255, 255, 0.10),
+    this.shadowColor = const Color.fromRGBO(255, 255, 255, 0.10),
     this.padding = const EdgeInsets.all(4),
     this.size,
     required this.child,
@@ -52,8 +85,8 @@ class AnimatedBorderContainerState extends State<AnimatedBorderContainer>
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: widget.size!.height,
-        width: widget.size!.width,
+        height: widget.size?.height,
+        width: widget.size?.width,
         child: MouseRegion(
             onEnter: (_) {
               setState(() {
@@ -72,8 +105,8 @@ class AnimatedBorderContainerState extends State<AnimatedBorderContainer>
             },
             child: Stack(children: [
               SizedBox(
-                  height: widget.size!.height,
-                  width: widget.size!.width,
+                  height: widget.size?.height,
+                  width: widget.size?.width,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(widget.radius),
                     child: BackdropFilter(
@@ -82,14 +115,29 @@ class AnimatedBorderContainerState extends State<AnimatedBorderContainer>
                           color: Colors.transparent,
                         )),
                   )),
+              Container(
+                    height: widget.size?.height,
+                    width: widget.size?.width,
+                    decoration: BoxDecoration(
+                    borderRadius:
+                    BorderRadius.circular(widget.radius),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.transparent, widget.shadowColor],
+                        )
+                    ),
+                  ), 
               ClipRRect(
                   borderRadius: BorderRadius.circular(widget.radius),
                   child: Container(
-                    height: widget.size!.height,
-                    width: widget.size!.width,
+                    height: widget.size?.height,
+                    width: widget.size?.width,
+                    padding: widget.padding,
                     color: widget.backgroundColor,
                     child: widget.child,
                   )),
+               
               ClipPath(
                   clipper: CenterCutPath(
                       radius: widget.radius, thickness: widget.strokeWidth),
@@ -97,8 +145,8 @@ class AnimatedBorderContainerState extends State<AnimatedBorderContainer>
                       animation: _controller,
                       builder: (context, _) {
                         return Container(
-                          height: widget.size!.height,
-                          width: widget.size!.width,
+                          height: widget.size?.height,
+                          width: widget.size?.width,
                           decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.circular(widget.radius),
@@ -139,3 +187,4 @@ class CenterCutPath extends CustomClipper<Path> {
     return oldClipper.radius != radius || oldClipper.thickness != thickness;
   }
 }
+
