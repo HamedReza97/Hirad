@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:hirad/components/app_bar.dart';
+import 'package:hirad/landing-page/about_section.dart';
 import 'package:hirad/landing-page/hero_image.dart';
 import 'package:hirad/landing-page/service_section.dart';
 
@@ -12,38 +13,25 @@ class LandingPage extends StatefulWidget {
 
 class LandingPageState extends State<LandingPage> {
   final ScrollController _scrollController = ScrollController();
-  final GlobalKey _heroImageKey = GlobalKey();
-  final GlobalKey _serviceSectionKey = GlobalKey();
-
-  bool heroImageVisible = true;
-  bool serviceSectionVisible = false;
+  bool serviceSectionLoaded = false;
+  bool aboutSectionLoaded = false;
   bool logedIn = false;
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_checkVisibility);
+    _scrollController.addListener(_checkScroll);
   }
 
-  void _checkVisibility() {
-    _checkWidgetVisibility(_serviceSectionKey, (isVisible) {
-      if (isVisible && !serviceSectionVisible) {
-        setState(() {
-          serviceSectionVisible = true;
-        });
-      }
-    });
-  }
-
-  void _checkWidgetVisibility(GlobalKey key, Function(bool) onVisibilityChange) {
-    final RenderObject? renderObject = key.currentContext?.findRenderObject();
-    if (renderObject != null && renderObject is RenderBox) {
-      final viewport = RenderAbstractViewport.of(renderObject);
-      final scrollOffset = _scrollController.offset;
-      final offsetToViewport = viewport.getOffsetToReveal(renderObject, 0.5).offset;
-
-      final isVisible = offsetToViewport <= scrollOffset + 300;
-      onVisibilityChange(isVisible);
+  void _checkScroll() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent) {
+      setState(() {
+        if (!serviceSectionLoaded) {
+          serviceSectionLoaded = true;
+        } else if (!aboutSectionLoaded) {
+          aboutSectionLoaded = true;
+        }
+      });
     }
   }
 
@@ -67,14 +55,13 @@ class LandingPageState extends State<LandingPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              key: _heroImageKey,
-              child: const HeroImage(),
-            ),
-            Container(
-              key: _serviceSectionKey,
-              child: serviceSectionVisible ? const ServiceSection() : const SizedBox(height: 600),
-            ),
+            const HeroImage(),
+            serviceSectionLoaded
+                ? const ServiceSection()
+                : SizedBox(height: screenHeight * 0.2),
+            aboutSectionLoaded
+                ? const AboutSection()
+                : SizedBox(height: screenHeight * 0.2),
           ],
         ),
       ),

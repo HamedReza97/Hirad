@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   flutter_inset_box_shadow: ^1.0.8
   flutter_svg: ^2.0.17
+  hive_flutter: ^1.1.0
   particles_flutter: ^1.0.1
   video_player: ^2.9.2
 

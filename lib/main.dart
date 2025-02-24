@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:hirad/database/helper.dart';
 import 'package:hirad/landing-page/landing_page.dart';
 import 'package:hirad/utils/dark_theme.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
-  debugProfileLayoutsEnabled = true;
+void main() async{
+    WidgetsFlutterBinding.ensureInitialized();
+  // Initialize Hive and open the box
+  await Hive.initFlutter();
+  final dbHelper = DatabaseHelper.instance;
+  await dbHelper.box; // Open the box
+  await dbHelper.initializeData();
   runApp(const MainApp());
 }
 

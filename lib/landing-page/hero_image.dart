@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:hirad/utils/animated_container.dart';
 import 'package:hirad/utils/animated_line.dart';
-import 'package:hirad/utils/interactive_background/particle_system.dart';
+// import 'package:hirad/utils/interactive_background/particle_system.dart';
 import 'package:hirad/utils/enefty_icons.dart';
 
 class HeroImage extends StatefulWidget{
@@ -120,10 +120,10 @@ class HeroImageState extends State<HeroImage>
               ),
             ),
           ),
-          ImageFiltered(
-            imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-            child: const ParticleSystemWidget(),
-          ),
+          // ImageFiltered(
+          //   imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+          //   child: const ParticleSystemWidget(),
+          // ),
           AnimatedBuilder(
             animation: _animation,
             builder: (context, child) {
