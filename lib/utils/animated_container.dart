@@ -31,7 +31,7 @@ class AnimatedBorderContainer extends StatefulWidget {
     this.isAnimated = false,
   });
 
-    const AnimatedBorderContainer.primaryButton({
+  const AnimatedBorderContainer.primaryButton({
     super.key,
     this.strokeWidth = 1,
     this.duration = const Duration(seconds: 2),
@@ -47,7 +47,8 @@ class AnimatedBorderContainer extends StatefulWidget {
     required this.child,
     this.isAnimated = false,
   });
-    const AnimatedBorderContainer.secondaryButton({
+
+  const AnimatedBorderContainer.secondaryButton({
     super.key,
     this.strokeWidth = 1,
     this.duration = const Duration(seconds: 2),
@@ -63,6 +64,7 @@ class AnimatedBorderContainer extends StatefulWidget {
     required this.child,
     this.isAnimated = false,
   });
+
   @override
   AnimatedBorderContainerState createState() => AnimatedBorderContainerState();
 }
@@ -70,115 +72,173 @@ class AnimatedBorderContainer extends StatefulWidget {
 class AnimatedBorderContainerState extends State<AnimatedBorderContainer>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  // ignore: unused_field
   bool _isHovered = false;
-
+  
+  late BorderRadius _borderRadius;
+  late CenterCutPath _clipPath;
+  
+  late BoxDecoration _shadowDecoration;
+  
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: widget.duration);
-    if (_isHovered) {
+    _updateCachedValues();
+    
+    if (widget.isAnimated) {
       _controller.repeat();
     }
+  }
+  
+  @override
+  void didUpdateWidget(AnimatedBorderContainer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.radius != widget.radius || 
+        oldWidget.strokeWidth != widget.strokeWidth ||
+        oldWidget.shadowColor != widget.shadowColor) {
+      _updateCachedValues();
+    }
+  }
+  
+  void _updateCachedValues() {
+    _borderRadius = BorderRadius.circular(widget.radius);
+    _clipPath = CenterCutPath(radius: widget.radius, thickness: widget.strokeWidth);
+    _shadowDecoration = BoxDecoration(
+      borderRadius: _borderRadius,
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Colors.transparent, widget.shadowColor],
+      )
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleMouseEnter(_) {
+    if (_isHovered) return;
+    
+    setState(() {
+      _isHovered = true;
+      _controller.repeat();
+    });
+  }
+
+  void _handleMouseExit(_) {
+    if (!_isHovered) return;
+    
+    setState(() {
+      _isHovered = false;
+      if (!widget.isAnimated) {
+        _controller.stop();
+        _controller.reset();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: widget.size?.height,
-        width: widget.size?.width,
-        child: MouseRegion(
-            onEnter: (_) {
-              setState(() {
-                _isHovered = true;
-                _controller.repeat();
-              });
-            },
-            onExit: (_) {
-              setState(() {
-                _isHovered = false;
-                if (!widget.isAnimated) {
-                  _controller.stop();
-                  _controller.reset();
-                }
-              });
-            },
-            child: Stack(children: [
-              SizedBox(
-                  height: widget.size?.height,
-                  width: widget.size?.width,
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(widget.radius),
-                    child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                        child: Container(
-                          color: Colors.transparent,
-                        )),
-                  )),
-              Container(
-                    height: widget.size?.height,
-                    width: widget.size?.width,
-                    decoration: BoxDecoration(
-                    borderRadius:
-                    BorderRadius.circular(widget.radius),
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Colors.transparent, widget.shadowColor],
-                        )
-                    ),
-                  ), 
+      height: widget.size?.height,
+      width: widget.size?.width,
+      child: MouseRegion(
+        onEnter: _handleMouseEnter,
+        onExit: _handleMouseExit,
+        child: Stack(
+          children: [
+            // Blur effect - costly operation
+            // ignore: deprecated_member_use
+            if (widget.backgroundColor.opacity > 0)
               ClipRRect(
-                  borderRadius: BorderRadius.circular(widget.radius),
+                borderRadius: _borderRadius,
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                   child: Container(
                     height: widget.size?.height,
                     width: widget.size?.width,
-                    padding: widget.padding,
-                    color: widget.backgroundColor,
-                    child: widget.child,
-                  )),
-               
-              ClipPath(
-                  clipper: CenterCutPath(
-                      radius: widget.radius, thickness: widget.strokeWidth),
-                  child: AnimatedBuilder(
-                      animation: _controller,
-                      builder: (context, _) {
-                        return Container(
-                          height: widget.size?.height,
-                          width: widget.size?.width,
-                          decoration: BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.circular(widget.radius),
-                              gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomLeft,
-                                  colors: widget.gradientColors,
-                                  transform: GradientRotation(
-                                      _controller.value * 2 * pi))),
-                        );
-                      }))
-            ])));
+                    color: Colors.transparent),
+                ),
+              ),
+              
+            // Shadow container
+            Container(
+              height: widget.size?.height,
+              width: widget.size?.width,
+              decoration: _shadowDecoration,
+            ),
+            
+            // Content container
+            ClipRRect(
+              borderRadius: _borderRadius,
+              child: Container(
+                height: widget.size?.height,
+                width: widget.size?.width,
+                padding: widget.padding,
+                color: widget.backgroundColor,
+                child: widget.child,
+              ),
+            ),
+            
+            // Animated border
+            RepaintBoundary(
+              child: ClipPath(
+                clipper: _clipPath,
+                child: AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, _) {
+                    return Container(
+                      height: widget.size?.height,
+                      width: widget.size?.width,
+                      decoration: BoxDecoration(
+                        borderRadius: _borderRadius,
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomLeft,
+                          colors: widget.gradientColors,
+                          transform: GradientRotation(_controller.value * 2 * pi),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
 class CenterCutPath extends CustomClipper<Path> {
   final double radius;
   final double thickness;
-  CenterCutPath({this.radius = 0, this.thickness = 1});
+  
+  const CenterCutPath({this.radius = 0, this.thickness = 1});
+  
   @override
   Path getClip(Size size) {
-    final rect = Rect.fromLTRB(
-        -size.width, -size.width, size.width * 2, size.height * 2);
     final double width = size.width - thickness * 2;
     final double height = size.height - thickness * 2;
-
+    final double borderRadius = max(0, radius - thickness);
+    
+    final inner = RRect.fromRectAndRadius(
+      Rect.fromLTWH(thickness, thickness, width, height),
+      Radius.circular(borderRadius)
+    );
+    
+    final outer = Rect.fromLTWH(-thickness, -thickness, 
+      size.width + thickness * 2, size.height + thickness * 2);
+    
     final path = Path()
       ..fillType = PathFillType.evenOdd
-      ..addRRect(RRect.fromRectAndRadius(
-          Rect.fromLTWH(thickness, thickness, width, height),
-          Radius.circular(radius - thickness)))
-      ..addRect(rect);
+      ..addRRect(inner)
+      ..addRect(outer);
+      
     return path;
   }
 
@@ -187,4 +247,3 @@ class CenterCutPath extends CustomClipper<Path> {
     return oldClipper.radius != radius || oldClipper.thickness != thickness;
   }
 }
-

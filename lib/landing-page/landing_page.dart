@@ -7,102 +7,130 @@ import 'package:hirad/landing-page/service_section.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
+
   @override
   LandingPageState createState() => LandingPageState();
 }
 
 class LandingPageState extends State<LandingPage> {
   bool logedIn = false;
+  late ScrollController _scrollController;
   
-  // Controllers to determine when sections should be loaded
-  final ScrollController _scrollController = ScrollController();
-  bool _isServiceSectionVisible = false;
-  bool _isAboutSectionVisible = false;
-  bool _isProductSectionVisible = false;
+  // Using ValueNotifier for more efficient state updates
+  final _visibilityNotifier = ValueNotifier({
+    'service': false,
+    'about': false,
+    'product': false,
+  });
   
-  // Estimated heights to help calculate when to load sections
-  final double _heroSectionHeight = 600; // Adjust based on your actual height
-  final double _serviceSectionHeight = 500; // Adjust based on your actual height
-  final double _aboutSectionHeight = 500; // Adjust based on your actual height
+  // Precalculated section offsets
+  static const double _heroSectionHeight = 600;
+  static const double _serviceSectionHeight = 500;
+  static const double _aboutSectionHeight = 500;
+  static const double _productSectionHeight = 500;
   
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_onScroll);
+    _scrollController = ScrollController()..addListener(_onScroll);
+    // Preload initial content
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkInitialVisibility());
   }
   
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _visibilityNotifier.dispose();
     super.dispose();
   }
   
+  void _checkInitialVisibility() {
+    if (!mounted) return;
+    _onScroll();
+  }
+  
   void _onScroll() {
-    final double offset = _scrollController.offset;
-    final double screenHeight = MediaQuery.of(context).size.height;
+    if (!mounted) return;
     
-    // Buffer to load sections before they're fully visible (preload threshold)
-    final double preloadThreshold = screenHeight * 0.5;
+    final offset = _scrollController.offset;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final preloadThreshold = screenHeight * 0.7;
     
-    // Check if service section should be visible
-    if (!_isServiceSectionVisible && 
+    Map<String, bool> updates = {};
+    
+    if (!_visibilityNotifier.value['service']! && 
         offset + screenHeight + preloadThreshold > _heroSectionHeight) {
-      setState(() {
-        _isServiceSectionVisible = true;
-      });
+      updates['service'] = true;
     }
     
-    // Check if about section should be visible
-    if (!_isAboutSectionVisible && 
+    if (!_visibilityNotifier.value['about']! && 
         offset + screenHeight + preloadThreshold > _heroSectionHeight + _serviceSectionHeight) {
-      setState(() {
-        _isAboutSectionVisible = true;
-      });
+      updates['about'] = true;
     }
     
-    // Check if product section should be visible
-    if (!_isProductSectionVisible && 
-        offset + screenHeight + preloadThreshold > _heroSectionHeight + _serviceSectionHeight + _aboutSectionHeight) {
-      setState(() {
-        _isProductSectionVisible = true;
-      });
+    if (!_visibilityNotifier.value['product']! && 
+        offset + screenHeight + preloadThreshold > 
+            _heroSectionHeight + _serviceSectionHeight + _aboutSectionHeight) {
+      updates['product'] = true;
+    }
+    
+    if (updates.isNotEmpty) {
+      _visibilityNotifier.value = {
+        ..._visibilityNotifier.value,
+        ...updates,
+      };
     }
   }
   
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
-      appBar: buildAppbar(context, screenHeight, screenWidth, logedIn),
+      appBar: buildAppbar(
+        context, 
+        MediaQuery.sizeOf(context).height, 
+        MediaQuery.sizeOf(context).width, 
+        logedIn,
+      ),
       extendBodyBehindAppBar: true,
-      body: SingleChildScrollView(
+      body: CustomScrollView(
         controller: _scrollController,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Hero section always loads immediately
-            const HeroImage(),
-            
-            // Service section loads when scrolled near it
-            _isServiceSectionVisible 
-                ? const ServiceSection() 
-                : SizedBox(height: _serviceSectionHeight),
-            
-            // About section loads when scrolled near it
-            _isAboutSectionVisible 
-                ? const AboutSection() 
-                : SizedBox(height: _aboutSectionHeight),
-                
-            // Product section loads when scrolled near it
-            _isProductSectionVisible
-                ? const ProductSection()
-                : const SizedBox(height: 500),
-          ],
-        ),
+        physics: const ClampingScrollPhysics(), 
+        slivers: [
+          const SliverToBoxAdapter(child: HeroImage()),
+          SliverToBoxAdapter(
+            child: ValueListenableBuilder<Map<String, bool>>(
+              valueListenable: _visibilityNotifier,
+              builder: (context, visibility, _) => AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: visibility['service']!
+                    ? const ServiceSection()
+                    : const SizedBox(height: _serviceSectionHeight),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: ValueListenableBuilder<Map<String, bool>>(
+              valueListenable: _visibilityNotifier,
+              builder: (context, visibility, _) => AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: visibility['about']!
+                    ? const AboutSection()
+                    : const SizedBox(height: _aboutSectionHeight),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: ValueListenableBuilder<Map<String, bool>>(
+              valueListenable: _visibilityNotifier,
+              builder: (context, visibility, _) => AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: visibility['product']!
+                    ? const ProductSection()
+                    : const SizedBox(height: _productSectionHeight),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

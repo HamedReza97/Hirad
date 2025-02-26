@@ -2,10 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:hirad/utils/animated_container.dart';
 import 'package:hirad/utils/animated_line.dart';
-// import 'package:hirad/utils/interactive_background/particle_system.dart';
 import 'package:hirad/utils/enefty_icons.dart';
 
-class HeroImage extends StatefulWidget{
+class HeroImage extends StatefulWidget {
   const HeroImage({super.key});
 
   @override
@@ -14,7 +13,8 @@ class HeroImage extends StatefulWidget{
 
 class HeroImageState extends State<HeroImage>
     with SingleTickerProviderStateMixin {
-  final List<Map<String, String>> items = [
+  // Using const for immutable lists
+  static const List<Map<String, String>> items = [
     {'title': 'فلنج و گسکت', 'subtitle': 'Flanges & Gaskets'},
     {'title': 'شیرآلات صنعتی', 'subtitle': 'Valves'},
     {'title': 'اتصالات', 'subtitle': 'Connectors'},
@@ -22,11 +22,21 @@ class HeroImageState extends State<HeroImage>
     {'title': 'لوله و تیوب', 'subtitle': 'Pipes'},
   ];
 
-  List<double> topFactors = [0.45, 0.2, 0.3, 0.45, 0.2];
-  List<double> leftFactors = [0.10, 0.24, 0.45, 0.75, 0.65];
+  // Initialize these lists once and modify when needed
+  final List<double> _topFactors = [0.45, 0.2, 0.3, 0.45, 0.2];
+  final List<double> _leftFactors = [0.10, 0.24, 0.45, 0.75, 0.65];
+  final List<double> _topFactorsMobile = [0.5, 0.2, 0.34, 0.42, 0.25];
+  final List<double> _leftFactorsMobile = [0.05, 0.05, 0.15, 0.5, 0.53];
 
   late AnimationController _controller;
   late Animation<double> _animation;
+  
+  // Cache calculation results
+  late double _screenHeight;
+  late double _screenWidth;
+  late bool _isWideScreen;
+  final List<Offset> _itemCenters = [];
+  final List<Offset> _connectorStarts = [];
 
   @override
   void initState() {
@@ -45,74 +55,86 @@ class HeroImageState extends State<HeroImage>
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(context).size.height;
-    double screenWidth = MediaQuery.of(context).size.width;
-    if(screenWidth/screenHeight > 1.4){
-      topFactors = [0.45, 0.2, 0.3, 0.45, 0.2];
-      leftFactors = [0.10, 0.24, 0.45, 0.75, 0.65];
-    }
-    else{
-      topFactors = [0.5, 0.2, 0.34, 0.42, 0.25];
-      leftFactors = [0.05, 0.05, 0.15, 0.5, 0.53];
-    }
-    List<Offset> itemCenters = [];
-    List<Offset> connectorStarts = [];
-    List<Widget> positionedItems = [];
-
+  // Precalculate positions based on screen size
+  void _calculatePositions(BuildContext context) {
+    _screenHeight = MediaQuery.of(context).size.height;
+    _screenWidth = MediaQuery.of(context).size.width;
+    _isWideScreen = _screenWidth / _screenHeight > 1.4;
+    
+    _itemCenters.clear();
+    _connectorStarts.clear();
+    
+    final topFactors = _isWideScreen ? _topFactors : _topFactorsMobile;
+    final leftFactors = _isWideScreen ? _leftFactors : _leftFactorsMobile;
+    
+    final double midpoint = _screenHeight * 0.30;
+    final double verticalMidPoint = _screenWidth * 0.5;
+    
     for (int i = 0; i < items.length; i++) {
-      double top = topFactors[i] * screenHeight;
-      double left = leftFactors[i] * screenWidth;
-      Offset center = Offset(left + 97.5, top + 60);
-      itemCenters.add(center);
-      double midpoint = screenHeight * 0.30;
-      double verticalMidPoint = screenWidth * 0.5;
+      final double top = topFactors[i] * _screenHeight;
+      final double left = leftFactors[i] * _screenWidth;
+      final Offset center = Offset(left + 97.5, top + 60);
+      _itemCenters.add(center);
+      
       double startY;
       double startX;
+      
       if (center.dy < midpoint) {
         startY = center.dy - 130;
       } else {
         startY = center.dy + 130;
       }
+      
       if (center.dx < verticalMidPoint) {
         startX = 0;
       } else {
-        startX = screenWidth;
+        startX = _screenWidth;
       }
-      startY = startY.clamp(0, screenHeight);
-      connectorStarts.add(Offset(startX, startY));
-      positionedItems.add(AnimatedBuilder(
-          animation: _animation,
-          builder: (context, child) {
-            double animValue = _animation.value;
-            return Positioned(
-                top: top - (30 * (1 - animValue)),
-                left: left,
-                child: Transform.scale(
-                    scale: 0.3 + (0.7 * animValue),
-                    child: buildItem(
-                      context,
-                      items[i]['title'].toString(),
-                      items[i]['subtitle'].toString(),
-                      const Icon(EneftyIcons.setting_2_outline),
-                    )));
-          }));
+      
+      startY = startY.clamp(0, _screenHeight);
+      _connectorStarts.add(Offset(startX, startY));
     }
+  }
+
+  // Memoize item widget creation
+  Widget _buildItemWithAnimation(int index, double animValue) {
+    final double top = (_isWideScreen ? _topFactors : _topFactorsMobile)[index] * _screenHeight;
+    final double left = (_isWideScreen ? _leftFactors : _leftFactorsMobile)[index] * _screenWidth;
+    
+    return Positioned(
+      top: top - (30 * (1 - animValue)),
+      left: left,
+      child: Transform.scale(
+        scale: 0.3 + (0.7 * animValue),
+        child: _buildItem(
+          context,
+          items[index]['title'] ?? '',
+          items[index]['subtitle'] ?? '',
+          const Icon(EneftyIcons.setting_2_outline),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    _calculatePositions(context);
+    
     return SizedBox(
-      height: screenWidth/screenHeight > 1.4 ? screenHeight *0.85 : screenHeight,
+      height: _isWideScreen ? _screenHeight * 0.85 : _screenHeight,
       width: double.infinity,
       child: Stack(
         children: [
+          // Background blur - rarely changes, could be const
           Positioned(
-            top: -screenHeight / 2,
+            top: -_screenHeight / 2,
             left: 0,
             right: 0,
             child: ImageFiltered(
               imageFilter: ImageFilter.blur(sigmaX: 200, sigmaY: 200),
               child: Container(
-                width: screenHeight,
-                height: screenHeight,
+                width: _screenHeight,
+                height: _screenHeight,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Color.fromRGBO(255, 255, 255, 0.05),
@@ -120,35 +142,47 @@ class HeroImageState extends State<HeroImage>
               ),
             ),
           ),
-          // ImageFiltered(
-          //   imageFilter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
-          //   child: const ParticleSystemWidget(),
-          // ),
+          
+          // Animated lines
           AnimatedBuilder(
             animation: _animation,
-            builder: (context, child) {
+            builder: (context, _) {
               return CustomPaint(
                 painter: AnimatedLinePainter(
-                  starts: connectorStarts,
-                  ends: itemCenters,
+                  starts: _connectorStarts,
+                  ends: _itemCenters,
                   animationValue: _animation.value,
                 ),
               );
             },
           ),
-          ...positionedItems,
+          
+          // Positioned items with animation
+          ..._buildPositionedItems(),
+          
+          // Title section
           Positioned(
             left: 0,
             right: 0,
-            top: screenHeight - screenHeight / 2 + screenHeight / 10,
-            child: buildTitle(context),
+            top: _screenHeight - _screenHeight / 2 + _screenHeight / 10,
+            child: _buildTitle(context),
           ),
         ],
       ),
     );
   }
 
-  Widget buildItem(
+  // Extract positionedItems generation to a separate method for clarity
+  List<Widget> _buildPositionedItems() {
+    return List.generate(items.length, (i) {
+      return AnimatedBuilder(
+        animation: _animation,
+        builder: (context, _) => _buildItemWithAnimation(i, _animation.value),
+      );
+    });
+  }
+
+  Widget _buildItem(
       BuildContext context, String title, String subTitle, Icon icon) {
     return SizedBox(
       height: 120,
@@ -192,7 +226,7 @@ class HeroImageState extends State<HeroImage>
     );
   }
 
-  Widget buildTitle(BuildContext context) {
+  Widget _buildTitle(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -257,7 +291,6 @@ class HeroImageState extends State<HeroImage>
                   ),
                 ),
               ),
-              
             ],
           ),
         ],
@@ -265,5 +298,3 @@ class HeroImageState extends State<HeroImage>
     );
   }
 }
-
-
