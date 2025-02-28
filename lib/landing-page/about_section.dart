@@ -76,7 +76,8 @@ class AboutSectionState extends State<AboutSection>
               Padding(
                   padding: EdgeInsets.symmetric(
                       horizontal: MediaQuery.of(context).size.width * 0.11),
-                  child: Column(children: [
+                  child: Column(
+                    children: [
                     Container(
                       decoration: const BoxDecoration(
                         gradient: LinearGradient(
@@ -164,6 +165,7 @@ Widget buildStats(BuildContext context) {
       final stats = snapshot.data!;
 
       return AnimatedBorderContainer(
+        duration: const Duration(seconds: 8),
   size: Size(MediaQuery.of(context).size.width * 0.7, 100),
   child: LayoutBuilder(
     builder: (context, constraints) {

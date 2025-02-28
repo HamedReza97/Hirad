@@ -11,60 +11,56 @@ class ProductSection extends StatefulWidget {
   ProductSectionState createState() => ProductSectionState();
 }
 
-class ProductSectionState extends State<ProductSection> {
+class ProductSectionState extends State<ProductSection>
+    with AutomaticKeepAliveClientMixin<ProductSection> {
+  @override
+  bool get wantKeepAlive => true;
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
+  final PageController _pageController = PageController(initialPage: 0);
   int _selectedIndex = 0;
   List<String> _categories = [];
-  ProductCategory? _currentCategory;
+  List<ProductCategory?> _categoryData = [];
   bool _isLoading = true;
-  bool _isCategoryLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _loadCategories();
+    _loadAllCategories();
   }
 
-  Future<void> _loadCategories() async {
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadAllCategories() async {
+    setState(() => _isLoading = true);
+
     try {
       final fetchedCategories = await _dbHelper.getCategoryNames();
       if (fetchedCategories.isNotEmpty) {
+        final futures = fetchedCategories
+            .map((category) => _dbHelper.getCategoryWithProducts(category))
+            .toList();
+
+        final results = await Future.wait(futures);
+
         setState(() {
           _categories = fetchedCategories;
+          _categoryData = results;
+          _isLoading = false;
         });
-        await _loadCategoryData(_selectedIndex);
       }
     } catch (e) {
       debugPrint('Error loading categories: $e');
-    } finally {
       setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _loadCategoryData(int index) async {
-    if (index >= _categories.length) return;
-
-    setState(() => _isCategoryLoading = true);
-    try {
-      final category =
-          await _dbHelper.getCategoryWithProducts(_categories[index]);
-      if (category != null && mounted) {
-        setState(() {
-          _currentCategory = category;
-          _selectedIndex = index;
-        });
-      }
-    } catch (e) {
-      debugPrint('Error loading category data: $e');
-    } finally {
-      if (mounted) {
-        setState(() => _isCategoryLoading = false);
-      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -81,39 +77,37 @@ class ProductSectionState extends State<ProductSection> {
   Widget _buildSmallScreen() {
     return Column(
       children: [
-        // _buildCategoryList(),
-        if (_isCategoryLoading)
-          const Center(child: CircularProgressIndicator())
-        else
-          ..._buildProductContent(
-              false), 
-      ],
-    );
+        _buildPortraitTab(),
+    ]);
   }
 
   Widget _buildLargeScreen() {
     return Row(
       children: [
-        _buildCategoryList(),
-        const SizedBox(
-          width: 20,
-        ),
-        Expanded(
-          child: _isCategoryLoading
-              ? const Center(child: CircularProgressIndicator())
-              : PageView.builder(
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) {
-                  return _buildProductContent(true);
-                },
-
-              ),
+        _buildLanscapeCategoryList(),
+        const SizedBox(width: 20),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.8,
+          width: MediaQuery.of(context).size.width - 270,
+          child: PageView.builder(
+            controller: _pageController,
+            itemCount: _categories.length,
+            scrollDirection: Axis.vertical,
+            onPageChanged: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              return _buildLandscapeContent(context, index);
+            },
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildCategoryList() {
+  Widget _buildLanscapeCategoryList() {
     final colorScheme = Theme.of(context).colorScheme;
     const selectedColor = Color.fromRGBO(204, 26, 68, 1);
 
@@ -171,7 +165,12 @@ class ProductSectionState extends State<ProductSection> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () => _loadCategoryData(index),
+                      onPressed: () {
+                        _selectedIndex = index;
+                        _pageController.animateToPage(index,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.fastOutSlowIn);
+                      },
                       child: Text(
                         _categories[index],
                         style: TextStyle(
@@ -193,74 +192,140 @@ class ProductSectionState extends State<ProductSection> {
     );
   }
 
-  _buildProductContent(bool isLandscape) {
-    if (_currentCategory == null) {
-      return [const Center(child: Text('داده‌ای موجود نیست'))];
+Widget _buildPortraitTab() {
+  final colorScheme = Theme.of(context).colorScheme;
+  const selectedColor = Color.fromRGBO(204, 26, 68, 1);
+
+  return DefaultTabController(
+    length: _categories.length,
+    initialIndex: _selectedIndex,
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // TabBar for category navigation
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: TabBar(
+            isScrollable: true,
+            indicatorColor: selectedColor,
+            labelColor: selectedColor,
+            unselectedLabelColor: colorScheme.onPrimary,
+            dividerColor: Colors.transparent,
+            tabs: _categories
+                .map((category) => Tab(text: category))
+                .toList(),
+            onTap: (index) {
+              setState(() {
+                _selectedIndex = index;
+                _pageController.animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.fastOutSlowIn,
+                );
+              });
+            },
+          ),
+        ),
+        // TabBarView for content corresponding to each tab
+          SizedBox(
+          height: MediaQuery.of(context).size.height * 0.8,
+          width: MediaQuery.of(context).size.width,
+          child: TabBarView(
+            children: List.generate(
+              _categories.length,
+              (index) => _buildVerticalContent(index),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+
+  // Build content for landscape mode
+  Widget _buildLandscapeContent(BuildContext context, int index) {
+    if (index < 0 ||
+        index >= _categoryData.length ||
+        _categoryData[index] == null) {
+      return const Center(child: Text('داده‌ای موجود نیست'));
     }
-
+    final category = _categoryData[index]!;
     final size = MediaQuery.of(context).size.height * 0.6;
-    final catTitle = _currentCategory?.introduction.title ?? "";
-    final catContent = _currentCategory?.introduction.content ?? "";
-    final catImage = _currentCategory?.introduction.imageUrl ?? "";
+    final catTitle = category.introduction.title;
+    final catContent = category.introduction.content;
+    final catImage = category.introduction.imageUrl;
 
-    if (isLandscape) {
-      // For landscape orientation - return a single Row
-      return Padding(
+    return Padding(
         padding: const EdgeInsets.only(left: 50),
         child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Image.asset(
-            catImage,
-            height: size,
-            width: size,
-            fit: BoxFit.cover,
-          ),
-          const SizedBox(width: 30),
-          Expanded(
-            child: Column(
-              spacing: 8,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  catTitle,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                Text(
-                  catContent,
-                  textAlign: TextAlign.justify,
-                ),
-                const SizedBox(height: 10,),
-                AnimatedBorderContainer.primaryButton(
-                  size: const Size(200, 42),
-                  radius: 18,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      iconColor: Theme.of(context).colorScheme.onPrimary,
-                      backgroundColor: Colors.transparent,
-                      overlayColor: Colors.transparent,
-                      foregroundColor: Theme.of(context).colorScheme.onPrimary
-                    ),
-                    onPressed: (){
-                  },
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    spacing: 4,
-                    children: [
-                    Text("مشاهده بیشتر"),
-                    Icon(EneftyIcons.arrow_left_3_outline, size: 18)
-                  ],)
-                  )
-                )
-              ],
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              catImage,
+              height: size,
+              width: size,
+              fit: BoxFit.cover,
             ),
-          )
-        ],
-        )
-      );
-    } else {
-      // For portrait orientation - return a list of widgets for the Column
-      return [
+            const SizedBox(width: 30),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    catTitle,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  Text(
+                    catContent,
+                    textAlign: TextAlign.justify,
+                  ),
+                  const SizedBox(height: 10),
+                  AnimatedBorderContainer.primaryButton(
+                      size: const Size(200, 42),
+                      radius: 18,
+                      child: TextButton(
+                          style: TextButton.styleFrom(
+                              iconColor:
+                                  Theme.of(context).colorScheme.onPrimary,
+                              backgroundColor: Colors.transparent,
+                              overlayColor: Colors.transparent,
+                              foregroundColor:
+                                  Theme.of(context).colorScheme.onPrimary),
+                          onPressed: () {},
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("مشاهده بیشتر"),
+                              SizedBox(width: 4),
+                              Icon(EneftyIcons.arrow_left_3_outline, size: 18)
+                            ],
+                          )))
+                ],
+              ),
+            )
+          ],
+        ));
+  }
+
+  Widget _buildVerticalContent(int index) {
+    if (index < 0 ||
+        index >= _categoryData.length ||
+        _categoryData[index] == null) {
+      return const Center(child: Text('داده‌ای موجود نیست'));
+    }
+
+    final category = _categoryData[index]!;
+    final size = MediaQuery.of(context).size.height * 0.6;
+    final catTitle = category.introduction.title;
+    final catContent = category.introduction.content;
+    final catImage = category.introduction.imageUrl;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+    child: Column(
+      children: [
         Image.asset(
           catImage,
           height: size / 1.5,
@@ -277,8 +342,30 @@ class ProductSectionState extends State<ProductSection> {
         Text(
           catContent,
           textAlign: TextAlign.justify,
-        )
-      ];
-    }
+        ),
+        const SizedBox(height: 20,),
+        AnimatedBorderContainer.primaryButton(
+                      size: Size(MediaQuery.of(context).size.width * 0.8, 42),
+                      radius: 18,
+                      child: TextButton(
+                          style: TextButton.styleFrom(
+                              iconColor:
+                                  Theme.of(context).colorScheme.onPrimary,
+                              backgroundColor: Colors.transparent,
+                              overlayColor: Colors.transparent,
+                              foregroundColor:
+                                  Theme.of(context).colorScheme.onPrimary),
+                          onPressed: () {},
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("مشاهده بیشتر"),
+                              SizedBox(width: 4),
+                              Icon(EneftyIcons.arrow_left_3_outline, size: 18)
+                            ],
+                          )))
+      ],
+    )
+    );
   }
 }
