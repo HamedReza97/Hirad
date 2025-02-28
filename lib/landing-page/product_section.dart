@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hirad/database/helper.dart';
 import 'package:hirad/models/product_model.dart';
+import 'package:hirad/utils/animated_container.dart';
+import 'package:hirad/utils/enefty_icons.dart';
 
 class ProductSection extends StatefulWidget {
   const ProductSection({super.key});
@@ -41,10 +43,11 @@ class ProductSectionState extends State<ProductSection> {
 
   Future<void> _loadCategoryData(int index) async {
     if (index >= _categories.length) return;
-    
+
     setState(() => _isCategoryLoading = true);
     try {
-      final category = await _dbHelper.getCategoryWithProducts(_categories[index]);
+      final category =
+          await _dbHelper.getCategoryWithProducts(_categories[index]);
       if (category != null && mounted) {
         setState(() {
           _currentCategory = category;
@@ -66,23 +69,24 @@ class ProductSectionState extends State<ProductSection> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final isLandscape = MediaQuery.of(context).size.width / MediaQuery.of(context).size.height > 1.4;
-    
+    final isLandscape =
+        MediaQuery.of(context).size.width / MediaQuery.of(context).size.height >
+            1.4;
+
     return Directionality(
-      textDirection: TextDirection.rtl, 
-      child: isLandscape ? _buildLargeScreen() : _buildSmallScreen()
-    );
+        textDirection: TextDirection.rtl,
+        child: isLandscape ? _buildLargeScreen() : _buildSmallScreen());
   }
 
   Widget _buildSmallScreen() {
     return Column(
       children: [
-        _buildCategoryList(),
-        Expanded(
-          child: _isCategoryLoading 
-            ? const Center(child: CircularProgressIndicator()) 
-            : _buildProductContent(),
-        ),
+        // _buildCategoryList(),
+        if (_isCategoryLoading)
+          const Center(child: CircularProgressIndicator())
+        else
+          ..._buildProductContent(
+              false), 
       ],
     );
   }
@@ -91,10 +95,19 @@ class ProductSectionState extends State<ProductSection> {
     return Row(
       children: [
         _buildCategoryList(),
+        const SizedBox(
+          width: 20,
+        ),
         Expanded(
-          child: _isCategoryLoading 
-            ? const Center(child: CircularProgressIndicator()) 
-            : _buildProductContent(),
+          child: _isCategoryLoading
+              ? const Center(child: CircularProgressIndicator())
+              : PageView.builder(
+                scrollDirection: Axis.horizontal,
+                itemBuilder: (context, index) {
+                  return _buildProductContent(true);
+                },
+
+              ),
         ),
       ],
     );
@@ -103,7 +116,7 @@ class ProductSectionState extends State<ProductSection> {
   Widget _buildCategoryList() {
     final colorScheme = Theme.of(context).colorScheme;
     const selectedColor = Color.fromRGBO(204, 26, 68, 1);
-    
+
     return Container(
       padding: const EdgeInsets.only(right: 50),
       width: 200,
@@ -112,7 +125,7 @@ class ProductSectionState extends State<ProductSection> {
         children: List.generate(_categories.length, (index) {
           final isSelected = _selectedIndex == index;
           final isLastItem = index == _categories.length - 1;
-          
+
           return Stack(
             children: [
               // Vertical line
@@ -136,15 +149,14 @@ class ProductSectionState extends State<ProductSection> {
                     color: colorScheme.onPrimary,
                   ),
                 ),
-              
+
               // Category item
-              SizedBox( 
+              SizedBox(
                 height: 58,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (!isSelected) const SizedBox(width: 3),
-                    
                     Padding(
                       padding: EdgeInsets.only(top: isSelected ? 10 : 12),
                       child: Container(
@@ -152,18 +164,22 @@ class ProductSectionState extends State<ProductSection> {
                         height: isSelected ? 14 : 8,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isSelected ? selectedColor : colorScheme.onPrimary,
+                          color: isSelected
+                              ? selectedColor
+                              : colorScheme.onPrimary,
                         ),
                       ),
                     ),
-                    
                     TextButton(
                       onPressed: () => _loadCategoryData(index),
                       child: Text(
                         _categories[index],
                         style: TextStyle(
-                          color: isSelected ? selectedColor : colorScheme.onPrimary,
-                          fontWeight: isSelected ? FontWeight.bold : FontWeight.w100,
+                          color: isSelected
+                              ? selectedColor
+                              : colorScheme.onPrimary,
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.w100,
                         ),
                       ),
                     ),
@@ -177,20 +193,92 @@ class ProductSectionState extends State<ProductSection> {
     );
   }
 
-  Widget _buildProductContent() {
+  _buildProductContent(bool isLandscape) {
     if (_currentCategory == null) {
-      return const Center(child: Text('داده‌ای موجود نیست'));
+      return [const Center(child: Text('داده‌ای موجود نیست'))];
     }
-    
+
     final size = MediaQuery.of(context).size.height * 0.6;
-    
-    return Center(
-      child: Image.asset(
-        _currentCategory!.introduction.imageUrl,
-        height: size,
-        width: size,
-        fit: BoxFit.cover,
-      ),
-    );
+    final catTitle = _currentCategory?.introduction.title ?? "";
+    final catContent = _currentCategory?.introduction.content ?? "";
+    final catImage = _currentCategory?.introduction.imageUrl ?? "";
+
+    if (isLandscape) {
+      // For landscape orientation - return a single Row
+      return Padding(
+        padding: const EdgeInsets.only(left: 50),
+        child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Image.asset(
+            catImage,
+            height: size,
+            width: size,
+            fit: BoxFit.cover,
+          ),
+          const SizedBox(width: 30),
+          Expanded(
+            child: Column(
+              spacing: 8,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  catTitle,
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                Text(
+                  catContent,
+                  textAlign: TextAlign.justify,
+                ),
+                const SizedBox(height: 10,),
+                AnimatedBorderContainer.primaryButton(
+                  size: const Size(200, 42),
+                  radius: 18,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      iconColor: Theme.of(context).colorScheme.onPrimary,
+                      backgroundColor: Colors.transparent,
+                      overlayColor: Colors.transparent,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary
+                    ),
+                    onPressed: (){
+                  },
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    spacing: 4,
+                    children: [
+                    Text("مشاهده بیشتر"),
+                    Icon(EneftyIcons.arrow_left_3_outline, size: 18)
+                  ],)
+                  )
+                )
+              ],
+            ),
+          )
+        ],
+        )
+      );
+    } else {
+      // For portrait orientation - return a list of widgets for the Column
+      return [
+        Image.asset(
+          catImage,
+          height: size / 1.5,
+          width: double.infinity,
+          fit: BoxFit.cover,
+        ),
+        const SizedBox(height: 20),
+        Text(
+          catTitle,
+          style: Theme.of(context).textTheme.titleLarge,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 10),
+        Text(
+          catContent,
+          textAlign: TextAlign.justify,
+        )
+      ];
+    }
   }
 }
