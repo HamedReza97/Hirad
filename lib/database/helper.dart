@@ -39,7 +39,6 @@ class DatabaseHelper {
     return _productsBox!;
   }
 
-
   // Insert initial data (called from main.dart)
   Future<void> initializeData() async {
     final box = await websiteBox;
@@ -51,7 +50,8 @@ class DatabaseHelper {
       await box.put('hero_metadata', {
         'leading_title': 'شرکت تجهیز فرآیند هیراد',
         'title': 'کیفیتی سزاوار شما و اعتمادی خدشه ناپذیر',
-        'trailing_title': 'مهندسی دقیق، تأمین هوشمند، و تعهد به کیفیت—همراه شما در هر گام.'
+        'trailing_title':
+            'مهندسی دقیق، تأمین هوشمند، و تعهد به کیفیت—همراه شما در هر گام.'
       });
 
       // Hero Image Items
@@ -88,13 +88,14 @@ class DatabaseHelper {
           'icon': 'assets/images/service-icon-2.svg',
           'content':
               'تجـهیـز فرآیـنـد هـیـراد با دارا بودن روابط مستقیم با انبارداران بزرگ کالای صنعتی در ایـران امکان تـامین کـالا از ایشان را در سـریع ترین زمـان ممکن دارد ما با اخـذ ارتباط مستقیم از آنها تسهیل کننده منـابع ضروری در کـشور هستیم.'
-        },                
+        },
       ]);
 
       // About
       await box.put('about', {
         'title': 'درباره شرکت تجهیز فرآیند هیراد',
-        "content": "شرکت تجـهـیـز فـرآیـنـد هـیـراد در سـال ۱۳۹۴ در تـهـران با شماره ثبتی ۵۲۵۴۷۰ بـا بـررسی نیازمندی های صـنـایـع نــفـت, گــاز پتروشیـمی صنایـع وابسته و بـازار داخـل با ارائـه خـدمات فـنی و مهندسی به منظور تامین، تدارکات و تجهیزات فنی و صنعتی مورد نیاز صـنایـع، نفـت و گاز و پـتـروشیمی  پـالایـشگاه، نیروگاه ها، صنایـع تـولیدی، غـذایی و دارویی و سیالات  تاسیس گردیـد. شرکت تجـهـیز فـرآیـنـد هـیـراد   همواره سعی دارد با بهترین برند های جهانی از نظر کیـفـیت و اصالت کالا در ارتـبـاط و همکاری باشد تا بتواند کالایی قابل اطمینان و در عین حال با قـیـمـت مناسب در اختیار مـصـرف کنندگان قـرار بـدهـد و با تکیه به مـوجـودی انـبار داخـل و ارتباطات نزدیک با تولیدکنندگان داخلی و انبارهای خارجی آماده هرگونه پاسخگویی به استعمالات و نیاز های صنایع مرتبط باشد.رعایـت کلـیه استانداردهای بـیـن الـمـللی (ASMI,ASME,ANSI,API,EN,DIN,BS,ISO) و تحویل کالا در حضور نماینده کارفرما و ناظرین شرکـتـهـای بـازرسی و همچنین ارائه گواهینامه های مرتبط به کالا (Certificate)  از اهـداف راهـبـردی و برنامه های کاری این شرکت است.",
+        "content":
+            "شرکت تجـهـیـز فـرآیـنـد هـیـراد در سـال ۱۳۹۴ در تـهـران با شماره ثبتی ۵۲۵۴۷۰ بـا بـررسی نیازمندی های صـنـایـع نــفـت, گــاز پتروشیـمی صنایـع وابسته و بـازار داخـل با ارائـه خـدمات فـنی و مهندسی به منظور تامین، تدارکات و تجهیزات فنی و صنعتی مورد نیاز صـنایـع، نفـت و گاز و پـتـروشیمی  پـالایـشگاه، نیروگاه ها، صنایـع تـولیدی، غـذایی و دارویی و سیالات  تاسیس گردیـد. شرکت تجـهـیز فـرآیـنـد هـیـراد   همواره سعی دارد با بهترین برند های جهانی از نظر کیـفـیت و اصالت کالا در ارتـبـاط و همکاری باشد تا بتواند کالایی قابل اطمینان و در عین حال با قـیـمـت مناسب در اختیار مـصـرف کنندگان قـرار بـدهـد و با تکیه به مـوجـودی انـبار داخـل و ارتباطات نزدیک با تولیدکنندگان داخلی و انبارهای خارجی آماده هرگونه پاسخگویی به استعمالات و نیاز های صنایع مرتبط باشد.رعایـت کلـیه استانداردهای بـیـن الـمـللی (ASMI,ASME,ANSI,API,EN,DIN,BS,ISO) و تحویل کالا در حضور نماینده کارفرما و ناظرین شرکـتـهـای بـازرسی و همچنین ارائه گواهینامه های مرتبط به کالا (Certificate)  از اهـداف راهـبـردی و برنامه های کاری این شرکت است.",
         'link': ''
       });
 
@@ -110,7 +111,8 @@ class DatabaseHelper {
       // Standards
       await box.put('standards', {
         'title': 'استانداردها',
-        'content': 'وجود و تعریف استانداردهای متعدد جهانی باعث گردیده هم مشتریان و هم تامین کنندگان از زبانی مشترک بهره مند گردند و مشخصات فنی کالای درخواستی بر مبنای همین استانداردها تعیین شده؛ لذا تسلط و درک کامل شرکت اطلس پادیر از تمامی استانداردها به ویژه استانداردهای حوزه پایپینگ متریال، باعث می گردد کالای درخواستی طبق نیاز مشتری عرضه گردد تا از بعد فنی آرامش ایشان فراهم گردد.',
+        'content':
+            'وجود و تعریف استانداردهای متعدد جهانی باعث گردیده هم مشتریان و هم تامین کنندگان از زبانی مشترک بهره مند گردند و مشخصات فنی کالای درخواستی بر مبنای همین استانداردها تعیین شده؛ لذا تسلط و درک کامل شرکت اطلس پادیر از تمامی استانداردها به ویژه استانداردهای حوزه پایپینگ متریال، باعث می گردد کالای درخواستی طبق نیاز مشتری عرضه گردد تا از بعد فنی آرامش ایشان فراهم گردد.',
         'logo_files': [
           "assets/upload/standards/ansi.png",
           "assets/upload/standards/api.png",
@@ -120,89 +122,133 @@ class DatabaseHelper {
         ]
       });
 
+      // Explanation
+      await box.put('explanation', {
+        'title': 'چرا هیراد؟',
+        'content': 'همراه شما در طراحی، اجرا و بهره‌برداری کامل پروژه‌ها'
+            'شرکت تجهیز فرآیند هیراد با تمرکز بر حفظ روابط بلندمدت با مشتریان، فراتر از تأمین کالا، راهکارهای جامع و خدمات ویژه‌ای را برای تسهیل امور شما ارائه می‌دهد. ما متعهدیم که تمامی نیازهای شما را از صفر تا صد پروژه‌ها با بالاترین کیفیت پوشش دهیم.',
+        'subtitle': 'چشم انداز این شرکت تبدیل شدن به همکاری مورد اعتماد برای تولید کنندگان و تامین کننده ای مطمئن برای مشتریان می باشد.'
+      });
+      
+      // Footer
+      await box.put('footer', {
+        'address': 'تــهـران، خـیــابــان ستـارخــان خـیابان نیایش کوچـه موثق نـــژاد پـلـاک 1 واحــد یک',
+        'phone': ['02166420839', '02166429816'],
+        'whatsapp' : ['09352557163', '09129333608'],
+        'email': ['info@Hiradepc.ir','Hiradepc@gmail.com'],
+      });
+
       print('Initial data inserted');
     } else {
       print('Box already contains data');
     }
 
-   if (productBox.isEmpty) {
-  print('Box is empty, inserting initial data...');
+    if (productBox.isEmpty) {
+      print('Box is empty, inserting initial data...');
 
-  final initialProducts = {
-    'فلنج و گسکت': ProductCategory(
-      categoryName: 'فلنج و گسکت',
-      introduction: ProductIntroduction(
-        title: 'فلنج و گسکت',
-        imageUrl: 'assets/images/image.jpg',
-        content: 'توضیحات کامل در مورد فلنج و گسکت',
-      ),
-      products: [
-        Product(name: 'فلنج جوشی', price: 1000, features: ['فولاد', 'فشار بالا']),
-        Product(name: 'گسکت اسپیرال وند', price: 500, features: ['گرافیت', 'دمای بالا']),
-      ],
-    ),
-    'شیرآلات صنعتی': ProductCategory(
-      categoryName: 'شیرآلات صنعتی',
-      introduction: ProductIntroduction(
-        title: 'شیرآلات صنعتی',
-        imageUrl: 'assets/images/image.jpg',
-        content: 'واردات و تامین انواع مختلف شیرالات صنعتی در متریال های کربـن استیل ، استنلس استیل ، فولاد های آلیاژی ( Alloy Steel ) ، چـدنی، بر اساس استاندارد متریال : ASME/API/NACE/DIN، شیر فلکه تـوپی ،شیر کشویـی ، شیر سـوزنی ، شیر یکطرفه (خـودکار) ، شیر نیدل شیر پـروانه ای ، شیر پـلاگ، ، شیر اسـتوانه ای، شیر فـشار شکن ، شیر اطمـینان ، شیر دیـافـراگمی بر اسـاس انـواع اتـصـال دو سـر : فـلـنـجـی RF/RTJ ، جـوشی ، سـاکت، دنده',
-      ),
-      products: [
-        Product(name: 'شیر گیت ولو', price: 1500, features: ['فولاد', 'فشار بالا']),
-        Product(name: 'شیر توپی', price: 1200, features: ['برنج', 'اندازه کوچک']),
-      ],
-    ),
-    'اتصالات': ProductCategory(
-      categoryName: 'اتصالات',
-      introduction: ProductIntroduction(
-        title: 'اتصالات',
-        imageUrl: 'assets/images/image.jpg',
-        content: 'توضیحات کامل در مورد اتصالات',
-      ),
-      products: [
-        Product(name: 'اتصال جوشی', price: 800, features: ['فولاد', 'فشار بالا']),
-        Product(name: 'اتصال دنده‌ای', price: 600, features: ['برنج', 'اندازه کوچک']),
-      ],
-    ),
-    'ابزار دقیق': ProductCategory(
-      categoryName: 'ابزار دقیق',
-      introduction: ProductIntroduction(
-        title: 'ابزار دقیق',
-        imageUrl: 'assets/images/image.jpg',
-        content: 'توضیحات کامل در مورد ابزار دقیق',
-      ),
-      products: [
-        Product(name: 'ترانسمیتر فشار', price: 2000, features: ['دقت بالا', 'اندازه‌گیری فشار']),
-        Product(name: 'ترموکوپل', price: 1000, features: ['دقت بالا', 'اندازه‌گیری دما']),
-      ],
-    ),
-    'لوله و تیوب': ProductCategory(
-      categoryName: 'لوله و تیوب',
-      introduction: ProductIntroduction(
-        title: 'لوله و تیوب',
-        imageUrl: 'assets/images/image.jpg',
-        content: 'توضیحات کامل در مورد لوله و تیوب',
-      ),
-      products: [
-        Product(name: 'لوله فولادی', price: 3000, features: ['فولاد', 'فشار بالا']),
-        Product(name: 'تیوب مسی', price: 2000, features: ['مس', 'اندازه کوچک']),
-      ],
-    ),
-  };
+      final initialProducts = {
+        'فلنج و گسکت': ProductCategory(
+          categoryName: 'فلنج و گسکت',
+          introduction: ProductIntroduction(
+            title: 'فلنج و گسکت',
+            imageUrl: 'assets/images/image.jpg',
+            content: 'توضیحات کامل در مورد فلنج و گسکت',
+          ),
+          products: [
+            Product(
+                name: 'فلنج جوشی',
+                price: 1000,
+                features: ['فولاد', 'فشار بالا']),
+            Product(
+                name: 'گسکت اسپیرال وند',
+                price: 500,
+                features: ['گرافیت', 'دمای بالا']),
+          ],
+        ),
+        'شیرآلات صنعتی': ProductCategory(
+          categoryName: 'شیرآلات صنعتی',
+          introduction: ProductIntroduction(
+            title: 'شیرآلات صنعتی',
+            imageUrl: 'assets/images/image.jpg',
+            content:
+                'واردات و تامین انواع مختلف شیرالات صنعتی در متریال های کربـن استیل ، استنلس استیل ، فولاد های آلیاژی ( Alloy Steel ) ، چـدنی، بر اساس استاندارد متریال : ASME/API/NACE/DIN، شیر فلکه تـوپی ،شیر کشویـی ، شیر سـوزنی ، شیر یکطرفه (خـودکار) ، شیر نیدل شیر پـروانه ای ، شیر پـلاگ، ، شیر اسـتوانه ای، شیر فـشار شکن ، شیر اطمـینان ، شیر دیـافـراگمی بر اسـاس انـواع اتـصـال دو سـر : فـلـنـجـی RF/RTJ ، جـوشی ، سـاکت، دنده',
+          ),
+          products: [
+            Product(
+                name: 'شیر گیت ولو',
+                price: 1500,
+                features: ['فولاد', 'فشار بالا']),
+            Product(
+                name: 'شیر توپی',
+                price: 1200,
+                features: ['برنج', 'اندازه کوچک']),
+          ],
+        ),
+        'اتصالات': ProductCategory(
+          categoryName: 'اتصالات',
+          introduction: ProductIntroduction(
+            title: 'اتصالات',
+            imageUrl: 'assets/images/image.jpg',
+            content: 'توضیحات کامل در مورد اتصالات',
+          ),
+          products: [
+            Product(
+                name: 'اتصال جوشی',
+                price: 800,
+                features: ['فولاد', 'فشار بالا']),
+            Product(
+                name: 'اتصال دنده‌ای',
+                price: 600,
+                features: ['برنج', 'اندازه کوچک']),
+          ],
+        ),
+        'ابزار دقیق': ProductCategory(
+          categoryName: 'ابزار دقیق',
+          introduction: ProductIntroduction(
+            title: 'ابزار دقیق',
+            imageUrl: 'assets/images/image.jpg',
+            content: 'توضیحات کامل در مورد ابزار دقیق',
+          ),
+          products: [
+            Product(
+                name: 'ترانسمیتر فشار',
+                price: 2000,
+                features: ['دقت بالا', 'اندازه‌گیری فشار']),
+            Product(
+                name: 'ترموکوپل',
+                price: 1000,
+                features: ['دقت بالا', 'اندازه‌گیری دما']),
+          ],
+        ),
+        'لوله و تیوب': ProductCategory(
+          categoryName: 'لوله و تیوب',
+          introduction: ProductIntroduction(
+            title: 'لوله و تیوب',
+            imageUrl: 'assets/images/image.jpg',
+            content: 'توضیحات کامل در مورد لوله و تیوب',
+          ),
+          products: [
+            Product(
+                name: 'لوله فولادی',
+                price: 3000,
+                features: ['فولاد', 'فشار بالا']),
+            Product(
+                name: 'تیوب مسی', price: 2000, features: ['مس', 'اندازه کوچک']),
+          ],
+        ),
+      };
 
-  // Insert each category separately
-  for (var entry in initialProducts.entries) {
-    await productBox.put(entry.key, entry.value);
+      // Insert each category separately
+      for (var entry in initialProducts.entries) {
+        await productBox.put(entry.key, entry.value);
+      }
+
+      print('Initial data inserted');
+    } else {
+      print('Box already contains data');
+    }
   }
 
-  print('Initial data inserted');
-} else {
-  print('Box already contains data');
-}
-
-  }
-  
   // Fetch functions for website data
   Future<List<Map<String, dynamic>>> getHeroItems() async {
     final box = await websiteBox;
@@ -232,43 +278,57 @@ class DatabaseHelper {
     return about.cast<String, dynamic>();
   }
 
-    Future<Map<String, dynamic>> getStandard() async {
+  Future<Map<String, dynamic>> getStandard() async {
     final box = await websiteBox;
     final about = box.get('standards') as Map<dynamic, dynamic>? ?? {};
     print('Standard fetched');
     return about.cast<String, dynamic>();
   }
 
-Future<List<Map<String, dynamic>>> getStatistics() async {
-  final box = await websiteBox;
-  try {
-    var stats = box.get('statistics') as List<dynamic>?;
+    Future<Map<String, dynamic>> getExplanation() async {
+    final box = await websiteBox;
+    final about = box.get('explanation') as Map<dynamic, dynamic>? ?? {};
+    print('Explanation fetched');
+    return about.cast<String, dynamic>();
+  }
+  
+    Future<Map<String, dynamic>> getFooter() async {
+    final box = await websiteBox;
+    final about = box.get('footer') as Map<dynamic, dynamic>? ?? {};
+    print('Footer fetched');
+    return about.cast<String, dynamic>();
+  }
 
-    if (stats == null || stats.isEmpty) {
-      print('No statistics found, initializing default data');
-      await initializeData();
-      stats = box.get('statistics') as List<dynamic>?;
-    }
+  Future<List<Map<String, dynamic>>> getStatistics() async {
+    final box = await websiteBox;
+    try {
+      var stats = box.get('statistics') as List<dynamic>?;
 
-    if (stats == null || stats.isEmpty) {
-      print('No statistics available even after initialization.');
+      if (stats == null || stats.isEmpty) {
+        print('No statistics found, initializing default data');
+        await initializeData();
+        stats = box.get('statistics') as List<dynamic>?;
+      }
+
+      if (stats == null || stats.isEmpty) {
+        print('No statistics available even after initialization.');
+        return [];
+      }
+
+      print('Statistics fetched: ${stats.length}');
+
+      return stats.map((item) {
+        if (item is Map) {
+          return Map<String, dynamic>.from(item);
+        } else {
+          throw TypeError();
+        }
+      }).toList();
+    } catch (e) {
+      print('Error fetching statistics: $e');
       return [];
     }
-
-    print('Statistics fetched: ${stats.length}');
-
-    return stats.map((item) {
-      if (item is Map) {
-        return Map<String, dynamic>.from(item);
-      } else {
-        throw TypeError();
-      }
-    }).toList();
-  } catch (e) {
-    print('Error fetching statistics: $e');
-    return [];
   }
-}
 
   // Fetch functions for products
   Future<List<String>> getCategoryNames() async {

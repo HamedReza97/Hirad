@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hirad/components/app_bar.dart';
+import 'package:hirad/components/footer.dart';
 import 'package:hirad/landing-page/about_section.dart';
+import 'package:hirad/landing-page/explanation_section.dart';
 import 'package:hirad/landing-page/hero_image.dart';
 import 'package:hirad/landing-page/product_section.dart';
 import 'package:hirad/landing-page/service_section.dart';
@@ -23,6 +25,8 @@ class LandingPageState extends State<LandingPage> {
     'about': false,
     'product': false,
     'standard': false,
+    'explanation': false,
+    'footer': false,
   });
   
   // Precalculated section offsets
@@ -31,7 +35,9 @@ class LandingPageState extends State<LandingPage> {
   static const double _aboutSectionHeight = 500;
   static const double _productSectionHeight = 500;
   static const double _standardSectionHeight = 500;
-  
+  static const double _explanationSectionHeight = 400;
+    static const double _footerHeight = 500;
+
   @override
   void initState() {
     super.initState();
@@ -83,6 +89,17 @@ class LandingPageState extends State<LandingPage> {
       updates['standard'] = true;
     }
     
+    if (!_visibilityNotifier.value['explanation']! && 
+        offset + screenHeight + preloadThreshold > 
+            _heroSectionHeight + _serviceSectionHeight + _aboutSectionHeight + _productSectionHeight + _standardSectionHeight) {
+      updates['explanation'] = true;
+    }
+    if (!_visibilityNotifier.value['footer']! && 
+        offset + screenHeight + preloadThreshold > 
+            _heroSectionHeight + _serviceSectionHeight + _aboutSectionHeight + _productSectionHeight + _standardSectionHeight
+            + _explanationSectionHeight) {
+      updates['footer'] = true;
+    }
     if (updates.isNotEmpty) {
       _visibilityNotifier.value = {
         ..._visibilityNotifier.value,
@@ -147,6 +164,28 @@ class LandingPageState extends State<LandingPage> {
                 child: visibility['standard']!
                     ? const StandardSection()
                     : const SizedBox(height: _standardSectionHeight),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: ValueListenableBuilder<Map<String, bool>>(
+              valueListenable: _visibilityNotifier,
+              builder: (context, visibility, _) => AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: visibility['explanation']!
+                    ? ExplanationSection()
+                    : const SizedBox(height: _explanationSectionHeight),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: ValueListenableBuilder<Map<String, bool>>(
+              valueListenable: _visibilityNotifier,
+              builder: (context, visibility, _) => AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: visibility['footer']!
+                    ? const Footer()
+                    : const SizedBox(height: _footerHeight),
               ),
             ),
           ),
