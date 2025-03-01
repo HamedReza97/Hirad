@@ -4,6 +4,7 @@ import 'package:hirad/landing-page/about_section.dart';
 import 'package:hirad/landing-page/hero_image.dart';
 import 'package:hirad/landing-page/product_section.dart';
 import 'package:hirad/landing-page/service_section.dart';
+import 'package:hirad/landing-page/standard_section.dart';
 
 class LandingPage extends StatefulWidget {
   const LandingPage({super.key});
@@ -21,6 +22,7 @@ class LandingPageState extends State<LandingPage> {
     'service': false,
     'about': false,
     'product': false,
+    'standard': false,
   });
   
   // Precalculated section offsets
@@ -28,6 +30,7 @@ class LandingPageState extends State<LandingPage> {
   static const double _serviceSectionHeight = 500;
   static const double _aboutSectionHeight = 500;
   static const double _productSectionHeight = 500;
+  static const double _standardSectionHeight = 500;
   
   @override
   void initState() {
@@ -72,6 +75,12 @@ class LandingPageState extends State<LandingPage> {
         offset + screenHeight + preloadThreshold > 
             _heroSectionHeight + _serviceSectionHeight + _aboutSectionHeight) {
       updates['product'] = true;
+    }
+
+    if (!_visibilityNotifier.value['standard']! && 
+        offset + screenHeight + preloadThreshold > 
+            _heroSectionHeight + _serviceSectionHeight + _aboutSectionHeight + _productSectionHeight) {
+      updates['standard'] = true;
     }
     
     if (updates.isNotEmpty) {
@@ -127,6 +136,17 @@ class LandingPageState extends State<LandingPage> {
                 child: visibility['product']!
                     ? const ProductSection()
                     : const SizedBox(height: _productSectionHeight),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: ValueListenableBuilder<Map<String, bool>>(
+              valueListenable: _visibilityNotifier,
+              builder: (context, visibility, _) => AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: visibility['standard']!
+                    ? const StandardSection()
+                    : const SizedBox(height: _standardSectionHeight),
               ),
             ),
           ),

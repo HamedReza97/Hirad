@@ -107,6 +107,19 @@ class DatabaseHelper {
         {'title': 'نیروی انسانی', 'count': '15'},
       ]);
 
+      // Standards
+      await box.put('standards', {
+        'title': 'استانداردها',
+        'content': 'وجود و تعریف استانداردهای متعدد جهانی باعث گردیده هم مشتریان و هم تامین کنندگان از زبانی مشترک بهره مند گردند و مشخصات فنی کالای درخواستی بر مبنای همین استانداردها تعیین شده؛ لذا تسلط و درک کامل شرکت اطلس پادیر از تمامی استانداردها به ویژه استانداردهای حوزه پایپینگ متریال، باعث می گردد کالای درخواستی طبق نیاز مشتری عرضه گردد تا از بعد فنی آرامش ایشان فراهم گردد.',
+        'logo_files': [
+          "assets/upload/standards/ansi.png",
+          "assets/upload/standards/api.png",
+          "assets/upload/standards/astm.png",
+          "assets/upload/standards/mss.png",
+          "assets/upload/standards/nace.png"
+        ]
+      });
+
       print('Initial data inserted');
     } else {
       print('Box already contains data');
@@ -216,6 +229,13 @@ class DatabaseHelper {
     final box = await websiteBox;
     final about = box.get('about') as Map<dynamic, dynamic>? ?? {};
     print('About fetched');
+    return about.cast<String, dynamic>();
+  }
+
+    Future<Map<String, dynamic>> getStandard() async {
+    final box = await websiteBox;
+    final about = box.get('standards') as Map<dynamic, dynamic>? ?? {};
+    print('Standard fetched');
     return about.cast<String, dynamic>();
   }
 

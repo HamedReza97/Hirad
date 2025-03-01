@@ -25,6 +25,8 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/upload/
+    - assets/upload/standards/
   
   fonts: 
     - family: peyda
